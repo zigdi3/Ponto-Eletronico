@@ -49,8 +49,8 @@ namespace PontoEletronico.Controllers
             if (!result.Succeeded)
                 return Unauthorized("Credenciais inválidas.");
 
-            return Ok("Login realizado com sucesso.");
-            var usuario = await _userManager.FindByEmailAsync(email);    
+            var normalizedEmail = _userManager.NormalizeEmail(email);
+            var usuario = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == normalizedEmail);
             if (usuario == null)
             {
                 return Unauthorized("Usuário não encontrado.");
