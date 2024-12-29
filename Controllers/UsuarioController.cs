@@ -15,11 +15,12 @@ namespace PontoEletronico.Controllers
     {
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
-
-        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
+        private readonly IConfiguration _configuration;
+        public UsuarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -49,6 +50,26 @@ namespace PontoEletronico.Controllers
                 return Unauthorized("Credenciais inválidas.");
 
             return Ok("Login realizado com sucesso.");
+            var usuario = await _userManager.FindByEmailAsync(email);    
+            if (usuario == null)
+            {
+                return Unauthorized("Usuário não encontrado.");
+            }
+
+            var roles = await _userManager.GetRolesAsync(usuario);
+
+            var token = JwtTokenHelper.GenerateToken(
+                usuario.Id,
+                usuario.Email,
+                roles,
+                _configuration["Jwt:Key"] ?? "pontoEl&troniC0"
+            );
+
+            return Ok(new
+            {
+                access_token = token,
+                exp = DateTime.UtcNow.AddHours(1)
+            });
         }
 
         [HttpPost("logout")]
