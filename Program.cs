@@ -4,6 +4,8 @@ using PontoEletronico.Data;
 using PontoEletronico.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCors();
 
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -20,11 +22,27 @@ builder.Services.AddIdentity<Usuario, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        builder =>
+        {
+            builder.WithOrigins("http://localhost",
+                "http://localhost:4200"
+                )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .SetIsOriginAllowedToAllowWildcardSubdomains();
+        });
+});
 
 var app = builder.Build();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -38,9 +56,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRouting();
 
 app.MapControllers();
+
+
+
 
 app.Run();

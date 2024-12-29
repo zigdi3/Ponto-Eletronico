@@ -4,7 +4,7 @@ using PontoEletronico.Models;
 
 namespace PontoEletronico.Data
 {
-    public class DataContext : IdentityDbContext<Usuario>
+    public class DataContext : IdentityDbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
