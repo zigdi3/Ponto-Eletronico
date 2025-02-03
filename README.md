@@ -1,4 +1,3 @@
-
 # PontoEletronico - Projeto Backend
 
 Este o projeto backend para um sistema de ponto eletronio utilizando ASP.NET Core. Ele utiliza várias bibliotecas e pacotes para lidar com autenticação, armazenamento de dados e documentação da API.
@@ -54,11 +53,18 @@ Certifique-se de ter instalados:
    ```sh
    dotnet restore
    ```
-3. Execute o aplicativo:
+3. Execute as migrações para criar o Banco de dados:
 
    ```sh
-   dotnet run
+   dotnet run migrations
    ```
+4. Execute o aplicativo:
+
+```sh
+   dotnet run
+
+
+```
 
 ### Configuração
 
